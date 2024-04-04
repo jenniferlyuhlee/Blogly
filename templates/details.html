@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}{{user.full_name}}{% endblock %}
+
+{% block content %}
+<div class = "row">
+    {% if user.image_url %}
+    <div class="col-sm-4 col-6">
+        <img class="img-thumbnail" src = "{{user.image_url}}" alt ="{{user.full_name}} profile pic">
+    </div>
+    {% endif %}
+
+    <div class="col-sm-6 col-12">
+        <h1>{{user.full_name}}</h1>
+
+        <form class="d-inline" action="/users/{{user.id}}/edit">
+            <button class = "btn btn-primary" id = "edit">Edit</button>
+        </form>
+    
+        <form class="d-inline" action="/users/{{user.id}}/delete" method="POST">
+            <button class = "btn btn-danger id = "delete">Delete</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

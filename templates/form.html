@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}ADD USER{% endblock %}
+
+{% block content %}
+<h1>Create a User</h1>
+
+<form action="/users/new" method="POST">
+    <div class = "form-group">
+        <label for="fn">First Name</label>
+        <input id="fn" class="form-control" type="text" name="first-name" placeholder="Enter a first name">
+    </div>
+    <div class = "form-group">
+        <label for="ln">Last Name</label>
+        <input id="ln" class="form-control" type="text" name="last-name" placeholder="Enter a last name">
+    </div>
+    <div class = "form-group">
+        <label for="ln">Image URL</label>
+        <input id="url" class="form-control" type="text" name="image-url" placeholder="Provide an image of this user">
+    </div>
+    <div class = "form-group row">
+        <div class = "ml-auto mr-3">
+            <button class = "btn btn-success">Add</button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
