@@ -12,14 +12,34 @@
 
     <div class="col-sm-6 col-12">
         <h1>{{user.full_name}}</h1>
+       
+        <button class="d-inline btn btn-secondary">
+            <a class="text-white text-decoration-none"href="/users">Go Back</a>
+        </button>
 
-        <form class="d-inline" action="/users/{{user.id}}/edit">
-            <button class = "btn btn-primary" id = "edit">Edit</button>
-        </form>
-    
+        <button class="d-inline btn btn-primary">
+            <a class="text-white text-decoration-none"href="/users/{{user.id}}/edit">Edit</a>
+        </button>
+       
         <form class="d-inline" action="/users/{{user.id}}/delete" method="POST">
             <button class = "btn btn-danger id = "delete">Delete</button>
         </form>
+
+        <div class="mt-3">
+            <h2>Posts</h2>
+            {% if user.posts %}
+                {% for post in posts %}
+                <li class="ml-3">
+                    <a href = "/posts/{{post.id}}">{{post.title}}</a> 
+                    <small>| {{post.created_at.strftime('%b %d, %Y')}}</small>
+                </li>
+                {% endfor %}
+            {% endif %}
+
+            <button class="d-inline btn btn-success mt-3">
+                <a class="text-white text-decoration-none"href="/users/{{user.id}}/posts/new">Add Post</a>
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}
