@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from app import app
-from models import db, User, Post
+from models import db, User, Post, Tag
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly_test'
 app.config['SQLALCHEMY_ECHO'] = False
@@ -11,7 +11,7 @@ app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 db.drop_all()
 db.create_all()
 
-class BloglyTestCase(TestCase):
+class BloglyUserTestCase(TestCase):
     """Tests for Blogly users"""
 
     def setUp(self):
@@ -68,11 +68,11 @@ class BloglyTestCase(TestCase):
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertNotIn(self.test_user.full_name, html)
+            self.assertNotIn(f"{self.test_user.full_name}</a></li>", html)
 
 
 
-class BloglyTestCase(TestCase):
+class BloglyPostsTestCase(TestCase):
     """Tests for Blogly Posts"""
 
     def setUp(self):
@@ -80,7 +80,7 @@ class BloglyTestCase(TestCase):
 
         User.query.delete()
 
-        test_user = User(first_name="Test", last_name="User", image_url="https://cdn-fastly.petguide.com/media/2022/02/16/8257228/maltipoo.jpg?size=720x845&nocrop=1")
+        test_user = User(first_name="Test2", last_name="User2", image_url="https://cdn-fastly.petguide.com/media/2022/02/16/8257228/maltipoo.jpg?size=720x845&nocrop=1")
         db.session.add(test_user)
         db.session.commit()
 
@@ -134,5 +134,79 @@ class BloglyTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertNotIn(self.test_post.title, html)
+
+
+class BloglyTagsTestCase(TestCase):
+    """Tests for Blogly Posts"""
+
+    def setUp(self):
+        """Add sample user."""
+        User.query.delete()
+
+        test_user = User(first_name="Test3", last_name="User3", image_url="https://cdn-fastly.petguide.com/media/2022/02/16/8257228/maltipoo.jpg?size=720x845&nocrop=1")
+        db.session.add(test_user)
+        db.session.commit()
+
+        self.user_id = test_user.id
+        self.test_user = test_user
+
+        """Add sample post"""
+        Post.query.delete()
+
+        test_post = Post(title= "Python Test", content= "This is a test post", user_id= self.user_id)
+        db.session.add(test_post)
+        db.session.commit()
+
+        self.post_id = test_post.id
+        self.test_post = test_post
+
+        """Add sample tag"""
+        Tag.query.delete()
+
+        test_tag = Tag(name="IntegrationTest")
+        db.session.add(test_tag)
+        db.session.commit()
+
+        self.tag_id = test_tag.id
+        self.test_tag = test_tag
+
+
+    def tearDown(self):
+        """Clean up any fouled transaction."""
+
+        db.session.rollback()
+
+
+    def test_add_tag(self):
+        """Tests if a new tag is added to the tag list page"""
+        with app.test_client() as client:
+            data = {"name": "FlaskTest"}
+            resp = client.post(f"/tags/new", data=data, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("FlaskTest</a></li>", html)
+
+    def test_edit_tag(self):
+        """Tests if an edited tag is updated"""
+        with app.test_client() as client:
+            data = {"name": "Changed Name"}
+            resp = client.post(f"/tags/{self.tag_id}/edit", data=data, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Changed Name", html)
+            self.assertNotIn("FlaskTest", html)
+    
+       
+    def test_delete_tag(self):
+        """Tests if a tag is deleted"""
+        with app.test_client() as client:
+            resp = client.post(f"/tags/{self.tag_id}/delete", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn(f"{self.test_tag.name}</a></li>", html)
+
 
             

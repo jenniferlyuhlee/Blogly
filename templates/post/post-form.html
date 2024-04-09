@@ -16,6 +16,19 @@
             <textarea class="form-control col-10" id="content"  name="content" required></textarea>
         </div>
 
+        {% if tags %}
+        {% for tag in tags %}
+        <div class="form-check">
+            <input id="{{tag.name}}" 
+            class="form-check-input" 
+            type="checkbox" 
+            name="tags" 
+            value="{{tag.id}}">
+            <label for="{{tag.name}}" class="form-check-label">{{tag.name}}</label>
+        </div>
+        {% endfor %}
+        {% endif %}
+
         <div class = "form-group row">
             <div class = "ml-auto">
                 <button class="btn bg-white border border-info" 

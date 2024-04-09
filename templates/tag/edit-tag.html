@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Tag{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+<h1>Edit a Tag</h1>
+
+<form action="/tags/{{tag.id}}/edit" method="POST">
+    <div class = "form-group row">
+        <label class = "col-1" for="fn">Name</label>
+        <input class="form-control col-11" id="tag"  type="text" name="name" value="{{tag.name}}">
+    </div>
+
+    {% if posts %}
+    <h3>Add to post:</h3>
+    {% for post in posts %}
+    <div class="form-check">
+        <input id="{{post.id}}" 
+        class="form-check-input" 
+        type="checkbox" 
+        name="posts" 
+        value="{{post.id}}"
+        {% if post in tag.posts %}checked{% endif %}>
+        <label for="{{post.id}}" class="form-check-label">{{post.title}} <small><i>(By {{post.user.full_name}})</i></small></label>
+
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class = "form-group row">
+        <div class = "ml-auto">
+            <button class="btn bg-white border border-info" 
+            type = button><a class="text-info text-decoration-none"href ='/tags'>Cancel</a>
+            </button>
+            <button class = "btn btn-success">Save</button>
+        </div>
+    </div>
+</form>
+</div>
+{% endblock %}

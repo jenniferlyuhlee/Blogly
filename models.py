@@ -21,6 +21,9 @@ class User(db.Model):
                             nullable = False)
     image_url = db.Column (db.String)
 
+    posts = db.relationship('Post', backref='user',
+                           cascade='all, delete-orphan')
+
     @property
     def full_name(self):
         """Returns full name"""
@@ -40,6 +43,33 @@ class Post(db.Model):
     created_at = db.Column (db.DateTime, default = datetime.datetime.now)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
 
-    user = db.relationship('User', backref='posts'
-                        #    cascade='all, delete-orphan', single_parent=True
-                           )
+    tags = db.relationship('Tag',
+                           secondary = 'post_tags',
+                           cascade='all, delete',
+                           backref = 'posts')
+    
+    def __repr__(self):
+         p=self
+         return f"<(id={p.id}) title={p.title}: content={p.content}, user_id={p.user_id}>"
+
+
+class Tag(db.Model):
+    __tablename__ = 'tags'
+
+    id = db.Column (db.Integer,
+                    primary_key = True, 
+                    autoincrement = True)
+    name = db.Column (db.String, 
+                      nullable = False,
+                      unique = True)
+    
+
+class PostTag(db.Model):
+    __tablename__ = 'post_tags'
+
+    post_id = db.Column (db.Integer,
+                         db.ForeignKey('posts.id'),
+                         primary_key = True)
+    tag_id = db.Column (db.Integer,
+                         db.ForeignKey('tags.id'),
+                         primary_key = True)
